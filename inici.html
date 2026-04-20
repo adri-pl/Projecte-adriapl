@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ca">
+<title>Island Adventure</title>
+
+<body>
+    <h1>Pirates</h1>
+    <p>El vent bufa amb força i el mar amaga més secrets dels que pots imaginar. Ets un pirata comerciant, navegant d’illa en illa amb una missió clara: vendre menjar, guanyar or i sobreviure en un oceà ple de perills. Cada port és una oportunitat... però també un risc. Altres pirates no dubtaran a atacar-te per robar-te la mercaderia, i hauràs de decidir bé a quina illa dirigir-te.</p>
+    <p>Però hi ha alguna cosa pitjor que els pirates...</p>
+    <p>🐉 Una criatura recorre els mars, apareixent sense avisar i destruint tot el que troba al seu pas. 🐉</p>
+    <p>Gestiona bé els teus recursos, protegeix el teu vaixell i prepara’t per prendre decisions difícils</p>
+    <div id="inici"><button onclick="inici()">· Iniciar Joc ·</button></div>
+</body>
+
+<style>
+    body {
+        height: 500px;
+        background-color: white;
+        font-family: 'Georgia', serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 60px;
+        margin-bottom: 10px;
+        color: black;
+        text-shadow: 0 0 20px rgb(77, 77, 77);
+    }
+
+    p {
+        max-width: 800px;
+        font-size: 18px;
+        margin: 5px;
+        color: black;
+    }
+
+    button {
+        margin-top: 30px;
+        font-size: 20px;
+        padding: 12px 30px;
+        font-family: 'Georgia', serif;
+        background: black;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        box-shadow: 0 0 15px ;
+        transition: all 0.3s ease;
+    }
+
+    button:hover {
+        transform: scale(1.03);
+    }
+
+    button:active {
+        transform: scale(0.97);
+    }
+</style>
+
+<script>
+    function inici() {
+        window.location.href = "pirate.html";
+    }
+</script>
+
+</html>
