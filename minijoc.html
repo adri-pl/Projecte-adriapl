@@ -9,16 +9,14 @@
             overflow: hidden;
             background: #001122;
             font-family: Arial, sans-serif;
+            color: white;
         }
-
         #info {
             text-align: center;
             font-size: 24px;
-            color: white;
             margin: 20px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
-
         #circle {
             width: 90px;
             height: 90px;
@@ -27,12 +25,8 @@
             position: absolute;
             cursor: pointer;
             box-shadow: 0 0 20px #ff0000;
-            transition: transform 0.1s;
         }
-
-        #circle:active {
-            transform: scale(0.85);
-        }
+        #circle:active { transform: scale(0.85); }
     </style>
 </head>
 <body>
@@ -41,7 +35,7 @@
 <div id="circle"></div>
 
 <script>
-    let neededClicks = Math.floor(Math.random() * 31) + 40; // 40 a 70 clicks
+    let neededClicks = Math.floor(Math.random() * 31) + 40; // 40-70 clics
     let clicks = 0;
     let timeLeft = 5;
 
@@ -51,10 +45,8 @@
     function moveCircle() {
         const maxX = window.innerWidth - 100;
         const maxY = window.innerHeight - 100;
-
         const x = Math.random() * maxX;
         const y = Math.random() * maxY;
-
         circle.style.left = x + "px";
         circle.style.top = y + "px";
     }
@@ -64,34 +56,31 @@
         moveCircle();
     });
 
-    // Temporizador
+    // Temporitzador
     const timer = setInterval(() => {
         timeLeft--;
-        info.innerHTML = `Clics: ${clicks}/${neededClicks} &nbsp;&nbsp;&nbsp; Temps: ${timeLeft}s`;
+        info.innerHTML = `Clics: ${clicks}/${neededClicks} &nbsp;&nbsp;&nbsp; Temps restant: ${timeLeft}s`;
 
         if (clicks >= neededClicks) {
             clearInterval(timer);
-            // Victoria
-            let gold = parseInt(localStorage.getItem("gold") || 10);
-            gold += 10;
-            localStorage.setItem("gold", gold);
-            window.location.href = "pirate.html"; // o island.html si prefieres volver directamente
+            // GUARDEM el temps restant abans de sortir
+            localStorage.setItem("minigameTimeLeft", timeLeft);
+            localStorage.setItem("minigameClicks", clicks);
+            localStorage.setItem("minigameNeeded", neededClicks);
+
+            window.location.href = "pirate.html";   // ← Canvia si vols un altre nom
         }
 
         if (timeLeft <= 0) {
             clearInterval(timer);
-            // Derrota
-            let lives = parseInt(localStorage.getItem("lives") || 3);
-            lives = Math.max(0, lives - 1);
-            localStorage.setItem("lives", lives);
+            localStorage.setItem("minigameTimeLeft", 0);
             window.location.href = "pirate.html";
         }
     }, 1000);
 
-    // Posición inicial
+    // Posició inicial
     moveCircle();
-    info.innerHTML = `Clics: ${clicks}/${neededClicks} &nbsp;&nbsp;&nbsp; Temps: ${timeLeft}s`;
-
+    info.innerHTML = `Clics: ${clicks}/${neededClicks} &nbsp;&nbsp;&nbsp; Temps restant: ${timeLeft}s`;
 </script>
 </body>
 </html>
