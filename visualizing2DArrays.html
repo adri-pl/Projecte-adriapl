@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<title>Visualizing 2D Arrays</title>
+
+<style>
+    #stage
+    {
+        position: relative;
+        width: 480px;
+        height: 480px;
+    }
+
+    .cell {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border: 1px solid black;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+}
+
+</style>
+
+<button>repaint grid</button>
+<section id="game">
+  <h1>Manic Miner</h1>
+  <div id="stage"></div>
+  <p id="output"></p> 
+</section>
+<script>
+/*Basant-nos en aquest codi feu les següents modificacions :
+  1) Crea un array de 2 dimensions de 16x16 i ompliu-lo de 1s i 0s aleatòriament
+  2) Representa en una quadricula el array que has creat i posa un color per les bombes i un per la resta
+  array[0][0] = 1;
+  3) Feu una funció que compti el número de bombes
+  4) amb console.log comproveu el resultat
+  5) Poseu un missatge sota el tauler on surti aquesta info pel jugador
+*/
+
+
+var stage = document.querySelector("#stage");
+var missatge = document.getElementById("output");
+
+var SIZE = 60;
+var SPACE = 10;
+
+var ROWS = 10;
+var COLUMNS = 10;
+
+var acabar = false;
+var map = []; //Array unidimensional (!)
+var button = document.querySelector("button");
+button.addEventListener("click", play, false);
+
+stage.style.width = (COLUMNS * SIZE) + "px";
+stage.style.height = (ROWS * SIZE) + "px";
+
+
+function play(){
+    initArray();
+    console.log(comptarBombes());
+    render();
+}
+
+function comptarBombes(){
+    var laBomba = 0;
+    for (var row = 0; row < ROWS; row++)
+        for (var column = 0; column< COLUMNS; column++)
+            if (map[row][column]>0) laBomba++;
+
+    return laBomba;
+}
+
+function initArray(){
+        var bomba=0;
+        
+        for(var row = 0; row < ROWS; row++)
+        {
+            map[row] = [];
+            for(var column = 0; column<COLUMNS; column++)
+            {
+                map[row][column] = Math.floor(Math.random() * 1000) + 1;
+            }
+        }
+}
+
+function render(){
+        var missatgeSortida = "";
+        colorTauler = Math.floor(Math.random() * 3)
+        
+        for(var row = 0; row < ROWS; row++)
+        {
+            for(var column = 0; column<COLUMNS; column++)
+            {
+                var cell = document.createElement("div");
+
+                //cell.setAttribute("class", "cell");
+                cell.className = "cell"; 
+                cell.dataset.row = row; 
+                cell.dataset.column = column;
+                stage.appendChild(cell);
+
+                if (map[row][column]>5000){
+                    //cell.style.backgroundColor = "yellow";
+                    cell.style.backgroundImage = "url('images/bomba.png')";
+                    cell.style.backgroundSize = "cover";
+                }
+                else {
+                    cell.style.backgroundColor = "yellow";
+                    cell.textContent = map[row][column];
+                }
+                cell.style.top = row * (SIZE) + "px";
+                cell.style.left = column * (SIZE) + "px";
+            }
+        }
+        missatgeSortida = "el nombre total de caselles és: " + comptarBombes();
+        missatgeSortida = missatgeSortida + "<br>" + "el número més alt és: " + maxim();
+        missatgeSortida = missatgeSortida + "<br>" + "el número més petit és: " + minim();
+
+        //Pintar fondo celda valor minimo
+
+        //Pintar fondo celda valor maximo
+
+        missatge.innerHTML = missatgeSortida;
+}
+
+function maxim()
+{
+     var elMaxim = 0;
+     var rowMax = 0;
+     var columnMax = 0;
+     
+     for(var row = 0; row < ROWS; row++)
+        {
+            for(var column = 0; column<COLUMNS; column++)
+            {
+                if (map[row][column] > elMaxim){
+                    elMaxim = map[row][column];
+                    rowMax=row;
+                    columnMax=column;
+                }
+            }
+        }
+
+    return elMaxim;
+}
+
+function minim()
+{
+     var elMinim = 1000;
+     for(var row = 0; row < ROWS; row++)
+        {
+            for(var column = 0; column<COLUMNS; column++)
+            {
+                if (map[row][column] < elMinim) elMinim = map[row][column];
+            }
+        }
+
+    return elMinim;
+    return 0;
+}
+
+function randomColor() {
+
+    const r = Math.floor(Math.random() * 256);
+    const g = Math.floor(Math.random() * 256);
+    const b = Math.floor(Math.random() * 256);
+
+    return `rgb(${r},${g},${b})`
+}
+</script>

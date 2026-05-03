@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Game Over</title>
+</head>
+
+<body>
+    <h1>GAME OVER</h1>
+    <p id="missatge"></p>
+    <div id="reinici"><button onclick="reinici()">Reiniciar Joc</button></div>
+</body>
+
+<style>
+
+</style>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const tipus = params.get("tipus");
+
+    if (tipus === "food") {
+        document.getElementById("missatge").textContent = "T'has quedat sense menjar i heu mort tots de gana...";
+    }
+    else if (tipus === "gold") {
+        document.getElementById("missatge").textContent = "T'has quedat sense or i la teva tripulació t'ha tirat als taurons...";
+    }
+    else if (tipus === "monster") {
+        document.getElementById("missatge").textContent = "El monstre t'ha atrapat!!!";
+    }
+
+    function reinici() {
+        window.location.href = "pirate.html";
+    }
+</script>
+
+</html>

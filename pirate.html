@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <title>Island Adventure</title>
+    <style>
+        body {
+            position: relative;
+        }
+
+        #timer {
+            position: absolute;
+            font-size: 23px;
+            left: 454px;
+            bottom: 561px;
+        }
+
+        #lives {
+            font-size: 20px;
+            text-align: center;
+        }
+
+        #stage {
+            position: relative;
+            margin: 0 auto;
+            width: 512px;
+            height: 512px;
+            background-image: url("images/background.png");
+            background-size: cover;
+        }
+
+        .cell {
+            display: block;
+            position: absolute;
+            width: 64px;
+            height: 64px;
+        }
+
+        #gameOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            color: white;
+            text-align: center;
+            padding-top: 50px;
+        }
+
+        #output {
+            text-align: center;
+        }
+
+        #overlayContent button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #f1c40f;
+            border: 2px solid #d4ac0d;
+            border-radius: 5px;
+            margin: 5px;
+            transition: transform 0.1s;
+        }
+
+        #overlayContent button:hover {
+            background-color: #f39c12;
+            transform: scale(1.05);
+        }
+
+        #overlayContent h2 {
+            color: #f1c40f;
+            text-shadow: 2px 2px #000;
+        }
+
+        #win {
+            background-color: aqua;
+            color: black;
+            font-family: 'MedievalSharp', cursive;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<p id="timer"></p>
+<p id="lives"></p>
+<div id="stage"></div>
+<div id="gameOverlay">
+    <div id="overlayContent"></div>
+</div>
+<p id="output"></p>
+
+<script>
+    var stage = document.querySelector("#stage");
+    var output = document.querySelector("#output");
+
+    window.addEventListener("keydown", keydownHandler, false);
+
+    var map = [
+        [0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3],
+        [0, 0, 0, 1, 0, 2, 0, 0, 0, 1, 0, 2, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0],
+        [0, 0, 0, 2, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+        [0, 2, 0, 1, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0],
+        [0, 0, 1, 0, 0, 1, 0, 0, 2, 0, 0, 0, 0, 1, 0],
+        [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0],
+        [1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1],
+        [0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0],
+        [0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+        [0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0],
+        [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0],
+        [0, 0, 1, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+        [0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 1, 0, 0],
+        [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    ];
+
+    var gameObjects = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
+
+    var WATER = 0, ISLAND = 1, PIRATE = 2, HOME = 3, SHIP = 4, MONSTER = 5;
+    var UP = 38, DOWN = 40, RIGHT = 39, LEFT = 37;
+    var SIZE = 64, ROWS = 15, COLUMNS = 15, VIEW_SIZE = 8;
+
+    var shipRow, shipColumn, monsterRow, monsterColumn;
+    var lives = 3, food = 10, gold = 10, experience = 0;
+    var gameMessage = "Utilitza les fletxes per trobar el camí cap a casa.";
+    var moves = 0, maxMonsters = 5;
+
+    function spawnNewMonster() {
+        var currentMonsters = 0;
+        for (var r = 0; r < ROWS; r++) {
+            for (var c = 0; c < COLUMNS; c++) {
+                if (gameObjects[r][c] === MONSTER) currentMonsters++;
+            }
+        }
+        if (currentMonsters >= maxMonsters) return;
+
+        var safeCells = [];
+        var minDistance = 5;
+        for (var r = 0; r < ROWS; r++) {
+            for (var c = 0; c < COLUMNS; c++) {
+                if (map[r][c] === WATER && gameObjects[r][c] === 0) {
+                    var distance = Math.abs(r - shipRow) + Math.abs(c - shipColumn);
+                    if (distance >= minDistance) safeCells.push({ r: r, c: c });
+                }
+            }
+        }
+        if (safeCells.length > 0) {
+            var randomIndex = Math.floor(Math.random() * safeCells.length);
+            var pos = safeCells[randomIndex];
+            gameObjects[pos.r][pos.c] = MONSTER;
+        }
+    }
+
+    updateLives();
+    timer();
+
+    for (var row = 0; row < ROWS; row++) {
+        for (var column = 0; column < COLUMNS; column++) {
+            if (gameObjects[row][column] === SHIP) { shipRow = row; shipColumn = column; }
+            if (gameObjects[row][column] === MONSTER) { monsterRow = row; monsterColumn = column; }
+        }
+    }
+
+    render();
+
+    function keydownHandler(event) {
+        if (document.querySelector("#gameOverlay").style.display === "block") return;
+
+        switch (event.keyCode) {
+            case UP:
+                if (shipRow > 0) {
+                    gameObjects[shipRow][shipColumn] = 0;
+                    shipRow--;
+                    gameObjects[shipRow][shipColumn] = SHIP;
+                    food--; moves++;
+                }
+                break;
+            case DOWN:
+                if (shipRow < ROWS - 1) {
+                    gameObjects[shipRow][shipColumn] = 0;
+                    shipRow++;
+                    gameObjects[shipRow][shipColumn] = SHIP;
+                    food--; moves++;
+                }
+                break;
+            case LEFT:
+                if (shipColumn > 0) {
+                    gameObjects[shipRow][shipColumn] = 0;
+                    shipColumn--;
+                    gameObjects[shipRow][shipColumn] = SHIP;
+                    food--; moves++;
+                }
+                break;
+            case RIGHT:
+                if (shipColumn < COLUMNS - 1) {
+                    gameObjects[shipRow][shipColumn] = 0;
+                    shipColumn++;
+                    gameObjects[shipRow][shipColumn] = SHIP;
+                    food--; moves++;
+                }
+                break;
+        }
+
+        if (moves % 3 === 0 && event.keyCode >= 37 && event.keyCode <= 40) spawnNewMonster();
+
+        switch (map[shipRow][shipColumn]) {
+            case WATER: gameMessage = "Navegues per mar obert."; break;
+            case PIRATE: fight(); break;
+            case ISLAND: trade(); break;
+            case HOME: endGame(); break;
+        }
+
+        moveMonster();
+        if (gameObjects[shipRow][shipColumn] === MONSTER || food <= 0 || gold <= 0) endGame();
+        render();
+    }
+
+    var time = 0, timerInterval;
+    function timer() {
+        time++;
+        var minuts = Math.floor(time / 60);
+        var segons = time % 60;
+        if (segons < 10) segons = "0" + segons;
+        if (minuts < 10) minuts = "0" + minuts;
+        document.querySelector("#timer").innerHTML = minuts + ":" + segons;
+    }
+    document.querySelector("#timer").innerHTML = "00:00";
+    timerInterval = setInterval(timer, 1000);
+
+    function moveMonster() {
+        var MOV_UP = 1, MOV_DOWN = 2, MOV_LEFT = 3, MOV_RIGHT = 4;
+        for (var r = 0; r < ROWS; r++) {
+            for (var c = 0; c < COLUMNS; c++) {
+                if (gameObjects[r][c] === MONSTER) {
+                    var validDirections = [];
+                    if (r > 0 && map[r - 1][c] === WATER && gameObjects[r - 1][c] === 0) validDirections.push(MOV_UP);
+                    if (r < ROWS - 1 && map[r + 1][c] === WATER && gameObjects[r + 1][c] === 0) validDirections.push(MOV_DOWN);
+                    if (c > 0 && map[r][c - 1] === WATER && gameObjects[r][c - 1] === 0) validDirections.push(MOV_LEFT);
+                    if (c < COLUMNS - 1 && map[r][c + 1] === WATER && gameObjects[r][c + 1] === 0) validDirections.push(MOV_RIGHT);
+
+                    if (validDirections.length > 0) {
+                        var direction = validDirections[Math.floor(Math.random() * validDirections.length)];
+                        gameObjects[r][c] = 0;
+                        if (direction === MOV_UP) gameObjects[r - 1][c] = MONSTER;
+                        if (direction === MOV_DOWN) { gameObjects[r + 1][c] = MONSTER; r++; }
+                        if (direction === MOV_LEFT) gameObjects[r][c - 1] = MONSTER;
+                        if (direction === MOV_RIGHT) { gameObjects[r][c + 1] = MONSTER; c++; }
+                    }
+                }
+            }
+        }
+    }
+
+    function fight() {
+        document.querySelector("#gameOverlay").style.display = "block";
+        var gameType = Math.floor(Math.random() * 3) + 1;
+        if (gameType === 1) setup1();
+        else if (gameType === 2) setup2();
+        else setup3();
+    }
+
+    var clicksNeeded = 7, currentClicks = 0, gameTimer, timeLeft = 0, countdownTimer;
+
+    function setup1() {
+        currentClicks = 0; timeLeft = 7;
+        var content = document.querySelector("#overlayContent");
+        content.innerHTML = `
+            <h2>⚡ Prova de reflexos!</h2>
+            <p>Clica el botó groc abans que s'acabi el temps</p>
+            <h3 id="timerDisplay" style="color: #f1c40f; font-size: 24px;">Temps: 10s</h3>
+            <div id="gameArea" style="position: relative; width: 400px; height: 300px; margin: 0 auto; background: #333; border: 4px solid #f1c40f; overflow: hidden; cursor: crosshair;">
+                <div id="target" onclick="catchCoin()" style="position: absolute; width: 30px; height: 30px; background: #f1c40f; border-radius: 50%; transition: all 0.1s;"></div>
+            </div>
+            <p id="clickCounter">Impactes: 0 / 5</p>
+        `;
+        moveTarget();
+        gameTimer = setInterval(moveTarget, 1000);
+        countdownTimer = setInterval(function () {
+            timeLeft--;
+            document.querySelector("#timerDisplay").innerHTML = "Temps: " + timeLeft + "s";
+            if (timeLeft <= 0) failReflexes();
+        }, 1000);
+    }
+
+    var racerPos = { x: 20, y: 140 }, racerDir = "RIGHT", racerSpeed = 4;
+    function setup2() {
+        var content = document.querySelector("#overlayContent");
+        racerPos = { x: 20, y: 140 }; racerDir = "RIGHT";
+        content.innerHTML = `
+            <h2>🌊 Maniobra d'escapament</h2>
+            <p>Arriba al final (dreta) sense tocar els esculls (vermell).</p>
+            <div id="racerArea" style="position: relative; width: 400px; height: 300px; margin: 0 auto; background: #005a9e; border: 4px solid #fff; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 100px; width: 50px; height: 200px; background: #e74c3c;"></div>
+                <div style="position: absolute; bottom: 0; left: 250px; width: 50px; height: 200px; background: #e74c3c;"></div>
+                <div style="position: absolute; right: 0; top: 0; width: 20px; height: 300px; background: #2ecc71;"></div>
+                <div id="racer" style="position: absolute; width: 15px; height: 15px; background: black; border-radius: 50%; left: ${racerPos.x}px; top: ${racerPos.y}px;"></div>
+            </div>
+            <p>Utilitza les fletxes per canviar de direcció.</p>
+        `;
+        window.addEventListener("keydown", racerInput);
+        gameTimer = setInterval(function () {
+            if (racerDir === "UP") racerPos.y -= racerSpeed;
+            if (racerDir === "DOWN") racerPos.y += racerSpeed;
+            if (racerDir === "LEFT") racerPos.x -= racerSpeed;
+            if (racerDir === "RIGHT") racerPos.x += racerSpeed;
+            var racerEl = document.querySelector("#racer");
+            if (!racerEl) return;
+            racerEl.style.left = racerPos.x + "px";
+            racerEl.style.top = racerPos.y + "px";
+            if (racerPos.x < 0 || racerPos.x > 385 || racerPos.y < 0 || racerPos.y > 285) failRacer();
+            if (racerPos.x > 370) winRacer();
+            if ((racerPos.x > 85 && racerPos.x < 150 && racerPos.y < 200) || (racerPos.x > 235 && racerPos.x < 300 && racerPos.y > 100)) failRacer();
+        }, 30);
+    }
+
+    function racerInput(e) {
+        if (e.keyCode === 38) racerDir = "UP";
+        if (e.keyCode === 40) racerDir = "DOWN";
+        if (e.keyCode === 37) racerDir = "LEFT";
+        if (e.keyCode === 39) racerDir = "RIGHT";
+    }
+
+    function failRacer() {
+        clearInterval(gameTimer); window.removeEventListener("keydown", racerInput);
+        gold -= 15; gameMessage = "Has xocat contra les roques! Perds 15 d'or.";
+        closeOverlay();
+    }
+
+    function winRacer() {
+        clearInterval(gameTimer); window.removeEventListener("keydown", racerInput);
+        gold += 20; experience += 10; gameMessage = "Navegació perfecta! Guanyes 20 d'or.";
+        closeOverlay();
+    }
+
+    function catchCoin() {
+        currentClicks++;
+        document.querySelector("#clickCounter").innerHTML = "Progrés: " + currentClicks + " / 7";
+        if (currentClicks >= clicksNeeded) {
+            clearInterval(gameTimer); clearInterval(countdownTimer);
+            gold += 20; experience += 15; gameMessage = "Increïble! Ets el més ràpid del Carib.";
+            closeOverlay();
+        } else moveTarget();
+    }
+
+    function moveTarget() {
+        var target = document.querySelector("#target");
+        if (target) {
+            target.style.left = Math.floor(Math.random() * 350) + "px";
+            target.style.top = Math.floor(Math.random() * 250) + "px";
+        }
+    }
+
+    function failReflexes() {
+        clearInterval(gameTimer); clearInterval(countdownTimer);
+        gold -= 10; gameMessage = "Massa lent! Els pirates t'han robat 10 d'or mentre badaves.";
+        closeOverlay();
+    }
+
+    function closeOverlay() {
+        clearInterval(gameTimer); clearInterval(countdownTimer);
+        document.querySelector("#gameOverlay").style.display = "none";
+        render();
+    }
+
+    var playerSum = 0, dealerSum = 0;
+    function setup3() {
+        playerSum = dice() + dice(); dealerSum = dice();
+        var content = document.querySelector("#overlayContent");
+        content.innerHTML = `
+            <h2>🃏 Blackjack del Capità</h2>
+            <p>Aproxima't a 21 sense passar-te!</p>
+            <div style="display: flex; justify-content: center; gap: 40px; margin: 20px 0;">
+                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px;">
+                    <p>🏴‍☠️ Pirata</p>
+                    <h3 id="dealerScore">${dealerSum} + ?</h3>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; border: 2px solid gold;">
+                    <p>⛵ Tu</p>
+                    <h3 id="playerScore">${playerSum}</h3>
+                </div>
+            </div>
+            <div id="bjControls">
+                <button onclick="hit()">Dona'm carta 🃏</button>
+                <button onclick="stand()" style="background: #e74c3c;">Plantar-se ✋</button>
+            </div>
+            <p id="bjMessage">Vols una altra carta o t'hi quedes?</p>
+        `;
+    }
+
+    function dice() { return Math.floor(Math.random() * 10) + 2; }
+
+    function hit() {
+        playerSum += dice();
+        document.querySelector("#playerScore").innerHTML = playerSum;
+        if (playerSum > 21) {
+            document.querySelector("#bjControls").innerHTML = "";
+            document.querySelector("#bjMessage").innerHTML = "T'has passat de 21! Has perdut.";
+            setTimeout(function () {
+                gold -= 10; gameMessage = "Has perdut al Blackjack! El pirata es queda el teu or.";
+                closeOverlay();
+            }, 2000);
+        }
+    }
+
+    function stand() {
+        document.querySelector("#bjControls").innerHTML = "";
+        document.querySelector("#bjMessage").innerHTML = "El pirata juga el seu torn...";
+        var dealerInterval = setInterval(function () {
+            if (dealerSum < 17) {
+                dealerSum += dice();
+                document.querySelector("#dealerScore").innerHTML = dealerSum;
+            } else { clearInterval(dealerInterval); winner(); }
+        }, 800);
+    }
+
+    function winner() {
+        if (dealerSum > 21 || playerSum > dealerSum) {
+            gold += 20; experience += 10; gameMessage = "Has guanyat al pirata! +20 d'or.";
+        } else if (dealerSum > playerSum) {
+            gold -= 10; gameMessage = "El pirata tenia millors cartes. -10 d'or.";
+        } else gameMessage = "Empat! Ningú perd res.";
+        setTimeout(closeOverlay, 2000);
+    }
+
+    function trade() {
+        var overlay = document.querySelector("#gameOverlay");
+        var content = document.querySelector("#overlayContent");
+        overlay.style.display = "block";
+        var cost1 = Math.floor(Math.random() * 5) + 3, food1 = Math.floor(Math.random() * 5) + 4;
+        var cost2 = Math.floor(Math.random() * 8) + 8, food2 = Math.floor(Math.random() * 8) + 5;
+        content.innerHTML = `
+            <h2>🏝️ Benvingut a la botiga!</h2>
+            <p>Tens ${gold} monedes d'or. Què vols intercanviar?</p>
+            <div style="margin-bottom: 20px;">
+                <button onclick="buy(${cost1}, ${food1})">Oferta del dia: ${cost1} Or ➡️ ${food1} Cocos</button>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <button onclick="buy(${cost2}, ${food2})">Oferta pirata: ${cost2} Or ➡️ ${food2} Cocos</button>
+            </div>
+            <button onclick="closeOverlay()" style="background-color: #ff4444; color: white;">Sortir sense comprar</button>
+        `;
+    }
+
+    function buy(cost, amount) {
+        if (gold >= cost) {
+            gold -= cost; food += amount; experience += 2;
+            gameMessage = "Gràcies per la compra! Obtens " + amount + " cocos.";
+        } else gameMessage = "No tens prou or per aquest tracte...";
+        closeOverlay();
+    }
+
+    function resetTurn() {
+        for (var r = 0; r < ROWS; r++) { for (var c = 0; c < COLUMNS; c++) { gameObjects[r][c] = 0; } }
+        shipRow = 14; shipColumn = 0; gameObjects[shipRow][shipColumn] = SHIP;
+        gameObjects[1][2] = MONSTER;
+        food = 10; gold = 10; moves = 0;
+    }
+
+    function updateLives() { document.querySelector("#lives").innerHTML = "❤️ ".repeat(lives); }
+
+    function win() { window.location.href = "win.html"; }
+    function lose(tipus) { window.location.href = "lose.html?tipus=" + tipus; }
+
+    function endGame() {
+        if (map[shipRow][shipColumn] === HOME) win();
+        else if (gameObjects[shipRow][shipColumn] === MONSTER) {
+            lives--; updateLives();
+            if (lives > 0) { resetTurn(); render(); }
+            else lose("monster");
+        } else {
+            if (gold <= 0) {
+                lives--; updateLives();
+                if (lives > 0) { resetTurn(); render(); }
+                else lose("gold");
+            } else if (food <= 0) {
+                lives--; updateLives();
+                if (lives > 0) { resetTurn(); render(); }
+                else lose("food");
+            }
+        }
+    }
+
+    function render() {
+        stage.innerHTML = "";
+        var startRow = Math.max(0, Math.min(shipRow - 3, ROWS - VIEW_SIZE));
+        var startCol = Math.max(0, Math.min(shipColumn - 3, COLUMNS - VIEW_SIZE));
+        for (var row = startRow; row < startRow + VIEW_SIZE; row++) {
+            for (var column = startCol; column < startCol + VIEW_SIZE; column++) {
+                var cell = document.createElement("img");
+                cell.setAttribute("class", "cell");
+                stage.appendChild(cell);
+                switch (map[row][column]) {
+                    case WATER: cell.src = "images/water.png"; break;
+                    case ISLAND: cell.src = "images/island.png"; break;
+                    case PIRATE: cell.src = "images/pirate.png"; break;
+                    case HOME: cell.src = "images/home.png"; break;
+                }
+                switch (gameObjects[row][column]) {
+                    case SHIP: cell.src = "images/ship.png"; break;
+                    case MONSTER: cell.src = "images/monster.png"; break;
+                }
+                cell.style.top = (row - startRow) * SIZE + "px";
+                cell.style.left = (column - startCol) * SIZE + "px";
+            }
+        }
+        output.innerHTML = gameMessage + "<br>Or: " + gold + ", Menjar: " + food;
+    }
+</script>
+</body>
+</html>
