@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Island Adventure</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pirata+One&family=MedievalSharp&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'MedievalSharp', cursive;
+            background-image: url("images/background2.jpg");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .content-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 800px;
+            border: 3px solid #f1c40f;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Pirata One', cursive;
+            font-size: 3.5rem;
+            margin: 0 0 20px 0;
+            color: #f1c40f;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin: 15px 0;
+            text-align: justify;
+        }
+
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        #inici {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            font-family: 'Pirata One', cursive;
+            background-color: #f1c40f;
+            border: 2px solid #d4ac0d;
+            border-radius: 8px;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        button:hover {
+            background-color: #f39c12;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .dragon-icon {
+            font-size: 2rem;
+            margin: 0 5px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content-container">
+        <h1>Island Adventure</h1>
+        <p>El vent bufa amb força i el mar amaga més secrets dels que pots imaginar. Ets un pirata comerciant, navegant
+            d'illa en illa amb una missió clara: vendre menjar, guanyar or i sobreviure en un oceà ple de perills. Cada
+            port és una oportunitat... però també un risc. Altres pirates no dubtaran a atacar-te per robar-te la
+            mercaderia, i hauràs de decidir bé a quina illa dirigir-te.</p>
+        <p>Però hi ha alguna cosa pitjor que els pirates...</p>
+        <p><span class="dragon-icon">🐉</span> Una criatura recorre els mars, apareixent sense avisar i destruint tot el
+            que troba al seu pas. <span class="dragon-icon">🐉</span></p>
+        <p>Gestiona bé els teus recursos, protegeix el teu vaixell i prepara't per prendre decisions difícils</p>
+        <div id="inici">
+            <button onclick="inici()">· Iniciar Joc ·</button>
+            <button onclick="mostrarInstruccions()">· Instruccions ·</button>
+        </div>
+    </div>
+
+    <script>
+        function inici() {
+            window.location.href = "pirate.html";
+        }
+
+        function mostrarInstruccions() {
+            window.location.href = "instruccions.html";
+        }
+    </script>
+</body>
+
+</html>

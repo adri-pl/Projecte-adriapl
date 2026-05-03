@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Island Adventure - Tutorial</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pirata+One&family=MedievalSharp&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'MedievalSharp', cursive;
+            background-image: url("images/background2.jpg");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 3px solid #f1c40f;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Pirata One', cursive;
+            font-size: 3rem;
+            margin: 0;
+            color: #f1c40f;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            padding: 15px 40px;
+            font-family: 'Pirata One', cursive;
+            font-size: 1.5rem;
+            background-color: #f1c40f;
+            border: 2px solid #d4ac0d;
+            border-radius: 8px;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #f39c12;
+            transform: scale(1.05);
+        }
+
+        .button.active {
+            background-color: #e67e22;
+        }
+
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .card {
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            border: 3px solid #f1c40f;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            width: 350px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .card.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card h2 {
+            font-family: 'Pirata One', cursive;
+            color: #f1c40f;
+            margin-top: 0;
+            font-size: 1.8rem;
+        }
+
+        .card h3 {
+            color: #f39c12;
+            margin-top: 15px;
+        }
+
+        .card p,
+        .card li {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .card ul {
+            padding-left: 20px;
+        }
+
+        .card code {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .icon {
+            font-size: 1.5rem;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
+        .game-image {
+            width: 100%;
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .code-section {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+
+        .code-section pre {
+            margin: 0;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+
+        .back-button {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 8px 15px;
+            font-family: 'Pirata One', cursive;
+            font-size: 1.2rem;
+            background-color: #f1c40f;
+            border: 2px solid #d4ac0d;
+            border-radius: 8px;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .back-button:hover {
+            background-color: #f39c12;
+            transform: translateY(-50%) scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <button class="back-button" onclick="window.location.href='index.html'">
+            <span class="icon">⬅️</span>Tornar
+        </button>
+        <h1>🏴‍☠️ Island Adventure - Tutorial 🏴‍☠️</h1>
+    </header>
+
+    <main>
+        <div class="nav-buttons">
+            <button class="button" onclick="showSection('intro')">Introducció</button>
+            <button class="button" onclick="showSection('howto')">Com Jugar</button>
+            <button class="button" onclick="showSection('resources')">Recursos</button>
+            <button class="button" onclick="showSection('minigames')">Minijocs</button>
+        </div>
+
+        <div class="card-container">
+            <div id="intro" class="card active">
+                <h2><span class="icon">📖</span>Introducció</h2>
+                <p>Island Adventure és un joc d'aventures on et converteixes en un capità pirata que ha de trobar el
+                    camí de retorn a casa mentre navega per un oceà ple de perills.</p>
+                <h3>Finalitat del Joc</h3>
+                <p>El teu objectiu principal és arribar a la teva casa (representada per una icona 🏠 al mapa) mentre
+                    gestiones els teus recursos i evites els perills del mar.</p>
+                <h3>Perills del Mar</h3>
+                <ul>
+                    <li><span class="icon">🏴‍☠️</span>Pirates que et robaran si els trobes</li>
+                    <li><span class="icon">🐉</span>Monstres marins que poden destruir el teu vaixell</li>
+                    <li><span class="icon">⚓</span>Falta de recursos que pot fer que la teva tripulació mori</li>
+                </ul>
+                <h3>Com es Guanya</h3>
+                <p>Guanyes el joc quan arribes a la teva casa. La teva puntuació final es calcula basant-se en els
+                    recursos que tens, el temps que has trigat i l'experiència acumulada.</p>
+            </div>
+
+            <div id="howto" class="card">
+                <h2><span class="icon">🎮</span>Com Jugar</h2>
+                <h3>Controls</h3>
+                <p>Utilitza les fletxes del teclat per moure el teu vaixell:</p>
+                <ul>
+                    <li><span class="icon">⬆️</span>Fletxa amunt: Mou el vaixell cap amunt</li>
+                    <li><span class="icon">⬇️</span>Fletxa avall: Mou el vaixell cap avall</li>
+                    <li><span class="icon">⬅️</span>Fletxa esquerra: Mou el vaixell cap a l'esquerra</li>
+                    <li><span class="icon">➡️</span>Fletxa dreta: Mou el vaixell cap a la dreta</li>
+                </ul>
+                <h3>Mapa i Navegació</h3>
+                <p>El mapa està compost per diferents tipus de cel·les:</p>
+                <ul>
+                    <li><span class="icon">🌊</span>Aigua: Zones on pots navegar lliurement</li>
+                    <li><span class="icon">🏝️</span>Illes: Llocs on pots comerciar recursos</li>
+                    <li><span class="icon">🏴‍☠️</span>Pirates: Enemics que et robaran si els trobes</li>
+                    <li><span class="icon">🏠</span>Casa: El teu objectiu final, on guanyaràs el joc</li>
+                    <li><span class="icon">🐉</span>Monstres: Criatures perilloses que apareixen aleatòriament</li>
+                </ul>
+                <h3>Estratègia</h3>
+                <p>Per tenir èxit al joc, hauràs de:</p>
+                <ul>
+                    <li>Planificar la teva ruta per evitar perills</li>
+                    <li>Gestionar eficientment els teus recursos</li>
+                    <li>Decidir quan arriscar-te i quan ser prudent</li>
+                    <li>Aprofitar les oportunitats de comerç a les illes</li>
+                </ul>
+            </div>
+
+            <div id="resources" class="card">
+                <h2><span class="icon">💰</span>Recursos</h2>
+                <h3>Tipus de Recursos</h3>
+                <p>Al joc trobaràs quatre tipus de recursos principals:</p>
+                <ul>
+                    <li><span class="icon">❤️</span><span class="highlight">Vides:</span> Representen l'estat del teu
+                        vaixell. Si perds totes les vides, el joc s'acaba.</li>
+                    <li><span class="icon">💰</span><span class="highlight">Or:</span> Moneda principal per comprar
+                        recursos i reparacions.</li>
+                    <li><span class="icon">🍖</span><span class="highlight">Menjar:</span> Essencial per mantenir la
+                        teva tripulació viva. Es consumeix amb cada moviment.</li>
+                    <li><span class="icon">⭐</span><span class="highlight">Experiència:</span> S'obté en superar
+                        desafiaments i augmenta la teva puntuació final.</li>
+                </ul>
+                <h3>Com obtenir Recursos</h3>
+                <p><span class="highlight">Or:</span></p>
+                <ul>
+                    <li>Guanyant al minijoc de Blackjack contra pirates</li>
+                    <li>Venent menjar a les illes (5 menjar → 2 or)</li>
+                </ul>
+                <p><span class="highlight">Menjar:</span></p>
+                <ul>
+                    <li>Comprant a les illes (1 or → 5 menjar)</li>
+                </ul>
+                <p><span class="highlight">Vides:</span></p>
+                <ul>
+                    <li>Reparant el teu vaixell a les illes (3 or → 1 vida)</li>
+                </ul>
+                <p><span class="highlight">Experiència:</span></p>
+                <ul>
+                    <li>Guanyant combats contra pirates</li>
+                    <li>Arribant a la teva casa</li>
+                </ul>
+            </div>
+
+            <div id="minigames" class="card">
+                <h2><span class="icon">🎲</span>Minijocs</h2>
+                <h3>Blackjack del Capità</h3>
+                <p>Quetrobis un pirata, hauràs de jugar al Blackjack per decidir el teu destí:</p>
+                <ul>
+                    <li>L'objectiu és apropar-se a 21 sense passar-se</li>
+                    <li>Pots demanar cartes ("Dona'm carta") o plantar-te ("Plantar-se")</li>
+                    <li>Si guanyes, obtens 15 d'or i 10 d'experiència</li>
+                    <li>Si perds, perds 10 d'or</li>
+                    <li>Si hi ha empat, no passa res</li>
+                </ul>
+                <h3>Comerciant a les Illes</h3>
+                <p>A les illes podràs intercanviar recursos:</p>
+                <ul>
+                    <li><span class="icon">🍖</span>Comprar menjar: 1 or → 5 menjar</li>
+                    <li><span class="icon">💰</span>Vendre menjar: 5 menjar → 2 or</li>
+                    <li><span class="icon">⚓</span>Reparar vaixell: 3 or → 1 vida</li>
+                </ul>
+                <p>Planifica bé les teves transaccions per mantenir un equilibri entre tots els recursos!</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function showSection(sectionId) {
+            // Amagar totes les targetes
+            var cards = document.querySelectorAll('.card');
+            cards.forEach(function (card) {
+                card.classList.remove('active');
+            });
+
+            // Desactivar tots els botons
+            var buttons = document.querySelectorAll('.button');
+            buttons.forEach(function (button) {
+                button.classList.remove('active');
+            });
+
+            // Mostrar la targeta seleccionada
+            document.getElementById(sectionId).classList.add('active');
+
+            // Activar el botó corresponent
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+
+</html>
