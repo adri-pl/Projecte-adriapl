@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Island Adventure</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pirata+One&family=MedievalSharp&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'MedievalSharp', cursive;
+            background-image: url("images/background2.jpg");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 3px solid #f1c40f;
+        }
+
+        h1 {
+            font-family: 'Pirata One', cursive;
+            font-size: 3rem;
+            margin: 0;
+            color: #f1c40f;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        main {
+            display: flex;
+            flex-grow: 1;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        #leftPanel {
+            flex: 1;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid #f1c40f;
+            max-width: 250px;
+        }
+
+        #gameArea {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #rightPanel {
+            flex: 1;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid #f1c40f;
+            max-width: 250px;
+        }
+
+        #timer {
+            font-size: 23px;
+            margin-bottom: 15px;
+            color: #f1c40f;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #f1c40f;
+            width: 100px;
+        }
+
+        #stage {
+            position: relative;
+            width: 512px;
+            height: 512px;
+            background-image: url("images/background.png");
+            background-size: cover;
+            border: 3px solid #f1c40f;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .cell {
+            display: block;
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            transition: transform 0.2s;
+        }
+
+        .cell:hover {
+            transform: scale(1.05);
+        }
+
+        #gameOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+            color: white;
+            text-align: center;
+            padding-top: 50px;
+        }
+
+        #overlayContent {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        #overlayContent button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #f1c40f;
+            border: 2px solid #d4ac0d;
+            border-radius: 5px;
+            margin: 5px;
+            transition: transform 0.1s;
+            font-family: 'MedievalSharp', cursive;
+        }
+
+        #overlayContent button:hover {
+            background-color: #f39c12;
+            transform: scale(1.05);
+        }
+
+        #overlayContent h2 {
+            color: #f1c40f;
+            text-shadow: 2px 2px #000;
+            font-family: 'Pirata One', cursive;
+            font-size: 2.5rem;
+        }
+
+        #output {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 18px;
+            color: #fff;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #f1c40f;
+        }
+
+        .stats {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            border: 1px solid #f1c40f;
+        }
+
+        .stats h3 {
+            margin-top: 0;
+            color: #f1c40f;
+            font-family: 'Pirata One', cursive;
+        }
+
+        .stat-item {
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #timesList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #timesList li {
+            padding: 8px;
+            margin-bottom: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #timesList .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 3px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        #timesList .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+        #nicknameForm {
+            margin-bottom: 15px;
+        }
+
+        #nicknameForm input {
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #f1c40f;
+            background-color: rgba(255, 255, 255, 0.8);
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        #nicknameForm button {
+            background-color: #f1c40f;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        #win {
+            background-color: aqua;
+            color: black;
+            font-family: 'MedievalSharp', cursive;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Island Adventure</h1>
+    </header>
+
+    <main>
+        <section id="leftPanel">
+            <div id="nicknameForm">
+                <h3>Nom del Capità</h3>
+                <input type="text" id="nicknameInput" placeholder="Introdueix el teu nom" maxlength="15">
+                <button onclick="saveNickname()">Guardar Nom</button>
+            </div>
+
+            <div class="stats">
+                <h3>Temps Guardats</h3>
+                <ul id="timesList"></ul>
+            </div>
+        </section>
+
+        <section id="gameArea">
+            <div id="timer">00:00</div>
+            <div id="stage"></div>
+            <div id="output"></div>
+        </section>
+
+        <section id="rightPanel">
+            <div class="stats">
+                <h3>Estadístiques del Joc</h3>
+                <div class="stat-item">
+                    <span>Or:</span>
+                    <span id="goldDisplay">10</span>
+                </div>
+                <div class="stat-item">
+                    <span>Menjar:</span>
+                    <span id="foodDisplay">10</span>
+                </div>
+                <div class="stat-item">
+                    <span>Experiència:</span>
+                    <span id="expDisplay">0</span>
+                </div>
+            </div>
+
+            <div class="stats">
+                <h3>Controls</h3>
+                <p>Utilitza les fletxes del teclat per moure el vaixell.</p>
+            </div>
+        </section>
+    </main>
+
+    <div id="gameOverlay">
+        <div id="overlayContent"></div>
+    </div>
+
+    <script>
+        var stage = document.querySelector("#stage");
+        var output = document.querySelector("#output");
+        var timesList = document.querySelector("#timesList");
+        var nicknameInput = document.querySelector("#nicknameInput");
+
+        window.addEventListener("keydown", keydownHandler, false);
+
+        var map = [
+            [0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3],
+            [0, 0, 0, 1, 0, 2, 0, 0, 0, 1, 0, 2, 0, 0, 0],
+            [0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 2, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            [0, 2, 0, 1, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0],
+            [0, 0, 1, 0, 0, 1, 0, 0, 2, 0, 0, 0, 0, 1, 0],
+            [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0],
+            [1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1],
+            [0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0],
+            [0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0],
+            [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 0],
+            [0, 0, 1, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 1, 0, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ];
+
+        var gameObjects = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ];
+
+        var WATER = 0, ISLAND = 1, PIRATE = 2, HOME = 3, SHIP = 4, MONSTER = 5;
+        var UP = 38, DOWN = 40, RIGHT = 39, LEFT = 37;
+        var SIZE = 64, ROWS = 15, COLUMNS = 15, VIEW_SIZE = 8;
+
+        var shipRow, shipColumn, monsterRow, monsterColumn;
+        var food = 10, gold = 10, experience = 0;
+        var gameMessage = "Utilitza les fletxes per trobar el camí cap a casa.";
+        var moves = 0, maxMonsters = 5;
+
+        // Variables per al sistema de temps i nicknames
+        var savedTimes = [];
+        var playerNickname = "Capità Anònim";
+        var time = 0, timerInterval;
+
+        // Carregar temps guardats des de localStorage
+        function loadSavedTimes() {
+            var stored = localStorage.getItem('islandAdventureTimes');
+            if (stored) {
+                savedTimes = JSON.parse(stored);
+                renderTimesList();
+            }
+
+            var storedNickname = localStorage.getItem('islandAdventureNickname');
+            if (storedNickname) {
+                playerNickname = storedNickname;
+                nicknameInput.value = playerNickname;
+            }
+        }
+
+        // Guardar temps a localStorage
+        function saveTimeToStorage() {
+            localStorage.setItem('islandAdventureTimes', JSON.stringify(savedTimes));
+        }
+
+        // Guardar nickname a localStorage
+        function saveNickname() {
+            playerNickname = nicknameInput.value || "Capità Anònim";
+            localStorage.setItem('islandAdventureNickname', playerNickname);
+            gameMessage = "Nom guardat: " + playerNickname;
+            render();
+        }
+
+        // Afegir temps actual a la llista
+        function addCurrentTime() {
+            var minutes = Math.floor(time / 60);
+            var seconds = time % 60;
+            var formattedTime = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+
+            savedTimes.push({
+                nickname: playerNickname,
+                time: formattedTime,
+                timestamp: new Date().toLocaleString()
+            });
+
+            // Mantenir només els últims 10 temps
+            if (savedTimes.length > 10) {
+                savedTimes.shift();
+            }
+
+            saveTimeToStorage();
+            renderTimesList();
+        }
+
+        // Eliminar un temps guardat
+        function deleteTime(index) {
+            savedTimes.splice(index, 1);
+            saveTimeToStorage();
+            renderTimesList();
+        }
+
+        // Renderitzar la llista de temps guardats
+        function renderTimesList() {
+            timesList.innerHTML = "";
+
+            if (savedTimes.length === 0) {
+                var noTimes = document.createElement("li");
+                noTimes.textContent = "No hi ha temps guardats";
+                timesList.appendChild(noTimes);
+                return;
+            }
+
+            for (var i = 0; i < savedTimes.length; i++) {
+                var timeItem = document.createElement("li");
+
+                var span = document.createElement("span");
+                span.textContent = savedTimes[i].nickname + ": " + savedTimes[i].time;
+                timeItem.appendChild(span);
+
+                var deleteBtn = document.createElement("button");
+                deleteBtn.textContent = "Eliminar";
+                deleteBtn.className = "delete-btn";
+                deleteBtn.setAttribute("data-index", i);
+                deleteBtn.addEventListener("click", function () {
+                    deleteTime(parseInt(this.getAttribute("data-index")));
+                });
+
+                timeItem.appendChild(deleteBtn);
+                timesList.appendChild(timeItem);
+            }
+        }
+
+        // Funció per generar nous monstres
+        function spawnNewMonster() {
+            var currentMonsters = 0;
+            for (var r = 0; r < ROWS; r++) {
+                for (var c = 0; c < COLUMNS; c++) {
+                    if (gameObjects[r][c] === MONSTER) currentMonsters++;
+                }
+            }
+            if (currentMonsters >= maxMonsters) return;
+
+            var safeCells = [];
+            var minDistance = 5;
+            for (var r = 0; r < ROWS; r++) {
+                for (var c = 0; c < COLUMNS; c++) {
+                    if (map[r][c] === WATER && gameObjects[r][c] === 0) {
+                        var distance = Math.abs(r - shipRow) + Math.abs(c - shipColumn);
+                        if (distance >= minDistance) safeCells.push({ r: r, c: c });
+                    }
+                }
+            }
+            if (safeCells.length > 0) {
+                var randomIndex = Math.floor(Math.random() * safeCells.length);
+                var pos = safeCells[randomIndex];
+                gameObjects[pos.r][pos.c] = MONSTER;
+            }
+        }
+
+        // Inicialitzar el joc
+        function init() {
+            updateStats();
+            loadSavedTimes();
+
+            for (var row = 0; row < ROWS; row++) {
+                for (var column = 0; column < COLUMNS; column++) {
+                    if (gameObjects[row][column] === SHIP) {
+                        shipRow = row;
+                        shipColumn = column;
+                    }
+                    if (gameObjects[row][column] === MONSTER) {
+                        monsterRow = row;
+                        monsterColumn = column;
+                    }
+                }
+            }
+
+            render();
+        }
+
+        // Funció per gestionar les tecles premudes
+        function keydownHandler(event) {
+            if (document.querySelector("#gameOverlay").style.display === "block") return;
+
+            switch (event.keyCode) {
+                case UP:
+                    if (shipRow > 0) {
+                        if (gameObjects[shipRow - 1][shipColumn] === MONSTER) {
+                            shipRow--;
+                            endGame();
+                            return;
+                        }
+                        gameObjects[shipRow][shipColumn] = 0;
+                        shipRow--;
+                        gameObjects[shipRow][shipColumn] = SHIP;
+                        food--; moves++;
+                    }
+                    break;
+                case DOWN:
+                    if (shipRow < ROWS - 1) {
+                        if (gameObjects[shipRow - 1][shipColumn] === MONSTER) {
+                            shipRow--;
+                            endGame();
+                            return;
+                        }
+                        gameObjects[shipRow][shipColumn] = 0;
+                        shipRow++;
+                        gameObjects[shipRow][shipColumn] = SHIP;
+                        food--; moves++;
+                    }
+                    break;
+                case LEFT:
+                    if (shipColumn > 0) {
+                        if (gameObjects[shipRow - 1][shipColumn] === MONSTER) {
+                            shipRow--;
+                            endGame();
+                            return;
+                        }
+                        gameObjects[shipRow][shipColumn] = 0;
+                        shipColumn--;
+                        gameObjects[shipRow][shipColumn] = SHIP;
+                        food--; moves++;
+                    }
+                    break;
+                case RIGHT:
+                    if (shipColumn < COLUMNS - 1) {
+                        if (gameObjects[shipRow - 1][shipColumn] === MONSTER) {
+                            shipRow--;
+                            endGame();
+                            return;
+                        }
+                        gameObjects[shipRow][shipColumn] = 0;
+                        shipColumn++;
+                        gameObjects[shipRow][shipColumn] = SHIP;
+                        food--; moves++;
+                    }
+                    break;
+            }
+
+            if (moves % 3 === 0 && event.keyCode >= 37 && event.keyCode <= 40) spawnNewMonster();
+
+            switch (map[shipRow][shipColumn]) {
+                case WATER: gameMessage = "Navegues per mar obert."; break;
+                case PIRATE: fight(); break;
+                case ISLAND: trade(); break;
+                case HOME: endGame(); break;
+            }
+
+            // Comprobar si hi ha un monstre a la posició actual
+            if (gameObjects[shipRow][shipColumn] === MONSTER) {
+                endGame();
+                return;
+            }
+
+            moveMonster();
+
+            // Comprobar si un monstre s'ha mogut a la posició del vaixell
+            if (gameObjects[shipRow][shipColumn] === MONSTER) {
+                endGame();
+                return;
+            }
+
+            if (food <= 0 || gold <= 0) {
+                endGame();
+            }
+
+            updateStats();
+            render();
+        }
+
+        // Funció per al cronòmetre
+        function timer() {
+            time++;
+            var minuts = Math.floor(time / 60);
+            var segons = time % 60;
+            if (segons < 10) segons = "0" + segons;
+            if (minuts < 10) minuts = "0" + minuts;
+            document.querySelector("#timer").innerHTML = minuts + ":" + segons;
+        }
+
+        // Funció per moure els monstres
+        function moveMonster() {
+            var MOV_UP = 1, MOV_DOWN = 2, MOV_LEFT = 3, MOV_RIGHT = 4;
+            for (var r = 0; r < ROWS; r++) {
+                for (var c = 0; c < COLUMNS; c++) {
+                    if (gameObjects[r][c] === MONSTER) {
+                        var validDirections = [];
+                        if (r > 0 && map[r - 1][c] === WATER && gameObjects[r - 1][c] === 0) validDirections.push(MOV_UP);
+                        if (r < ROWS - 1 && map[r + 1][c] === WATER && gameObjects[r + 1][c] === 0) validDirections.push(MOV_DOWN);
+                        if (c > 0 && map[r][c - 1] === WATER && gameObjects[r][c - 1] === 0) validDirections.push(MOV_LEFT);
+                        if (c < COLUMNS - 1 && map[r][c + 1] === WATER && gameObjects[r][c + 1] === 0) validDirections.push(MOV_RIGHT);
+
+                        if (validDirections.length > 0) {
+                            var direction = validDirections[Math.floor(Math.random() * validDirections.length)];
+                            gameObjects[r][c] = 0;
+                            if (direction === MOV_UP) gameObjects[r - 1][c] = MONSTER;
+                            if (direction === MOV_DOWN) { gameObjects[r + 1][c] = MONSTER; r++; }
+                            if (direction === MOV_LEFT) gameObjects[r][c - 1] = MONSTER;
+                            if (direction === MOV_RIGHT) { gameObjects[r][c + 1] = MONSTER; c++; }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Funció per a la lluita contra pirates
+        function fight() {
+            document.querySelector("#gameOverlay").style.display = "block";
+            setup1();
+        }
+
+        // Variables per al minijoc de cartes
+        var playerSum = 0, dealerSum = 0, dealerCards = [], playerCards = [];
+
+        // Minijoc: Blackjack
+        function setup1() {
+            playerCards = [];
+            dealerCards = [];
+
+            // Repartir cartes inicials
+            playerCards.push(dice());
+            playerCards.push(dice());
+            dealerCards.push(dice());
+
+            playerSum = playerCards[0] + playerCards[1];
+            dealerSum = dealerCards[0];
+
+            var content = document.querySelector("#overlayContent");
+
+            // Crear representació visual de les cartes
+            var playerCardsHtml = "";
+            for (var i = 0; i < playerCards.length; i++) {
+                playerCardsHtml += `<div class="card" style="display: inline-block; width: 50px; height: 70px; background: white; color: black; border: 2px solid #333; margin: 0 5px; text-align: center; line-height: 70px; font-size: 24px; font-weight: bold; border-radius: 5px;">${playerCards[i]}</div>`;
+            }
+
+            var dealerCardsHtml = `<div class="card" style="display: inline-block; width: 50px; height: 70px; background: white; color: black; border: 2px solid #333; margin: 0 5px; text-align: center; line-height: 70px; font-size: 24px; font-weight: bold; border-radius: 5px;">${dealerCards[0]}</div>`;
+            dealerCardsHtml += `<div class="card" style="display: inline-block; width: 50px; height: 70px; background: #333; color: white; border: 2px solid #f1c40f; margin: 0 5px; text-align: center; line-height: 70px; font-size: 24px; font-weight: bold; border-radius: 5px;">?</div>`;
+
+            content.innerHTML = `
+                <h2>🃏 Blackjack del Capità</h2>
+                <p>Aproxima't a 21 sense passar-te!</p>
+                <div style="display: flex; justify-content: center; gap: 40px; margin: 20px 0;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px;">
+                        <p>🏴‍☠️ Pirata</p>
+                        <div style="margin: 10px 0;">${dealerCardsHtml}</div>
+                        <h3 id="dealerScore">${dealerSum} + ?</h3>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; border: 2px solid gold;">
+                        <p>⛵ Tu</p>
+                        <div style="margin: 10px 0;">${playerCardsHtml}</div>
+                        <h3 id="playerScore">${playerSum}</h3>
+                    </div>
+                </div>
+                <div id="bjControls">
+                    <button onclick="hit()">Dona'm carta 🃏</button>
+                    <button onclick="stand()" style="background: #e74c3c;">Plantar-se ✋</button>
+                </div>
+                <p id="bjMessage">Vols una altra carta o t'hi quedes?</p>
+            `;
+        }
+
+        // Funció per generar un valor de carta (2-11)
+        function dice() {
+            var value = Math.floor(Math.random() * 10) + 2;
+            // 10% de probabilitat de ser un as (11)
+            if (Math.random() < 0.1) value = 11;
+            return value;
+        }
+
+        // Funció per demanar una carta
+        function hit() {
+            var newCard = dice();
+            playerCards.push(newCard);
+            playerSum += newCard;
+
+            // Actualitzar la visualització
+            var playerCardsHtml = "";
+            for (var i = 0; i < playerCards.length; i++) {
+                playerCardsHtml += `<div class="card" style="display: inline-block; width: 50px; height: 70px; background: white; color: black; border: 2px solid #333; margin: 0 5px; text-align: center; line-height: 70px; font-size: 24px; font-weight: bold; border-radius: 5px;">${playerCards[i]}</div>`;
+            }
+
+            var playerScoreEl = document.querySelector("#playerScore");
+            if (playerScoreEl) {
+                playerScoreEl.innerHTML = playerSum;
+                playerScoreEl.previousElementSibling.innerHTML = playerCardsHtml;
+            }
+
+            if (playerSum > 21) {
+                var bjControls = document.querySelector("#bjControls");
+                var bjMessage = document.querySelector("#bjMessage");
+                if (bjControls) bjControls.innerHTML = "";
+                if (bjMessage) bjMessage.innerHTML = "T'has passat de 21! Has perdut.";
+
+                setTimeout(function () {
+                    gold -= 5;
+                    gameMessage = "Has perdut al Blackjack! El pirata es queda el teu or.";
+                    closeOverlay();
+                }, 2000);
+            }
+        }
+
+        // Funció per plantar-se
+        function stand() {
+            var bjControls = document.querySelector("#bjControls");
+            var bjMessage = document.querySelector("#bjMessage");
+
+            if (bjControls) bjControls.innerHTML = "";
+            if (bjMessage) bjMessage.innerHTML = "El pirata juga el seu torn...";
+
+            // Mostrar totes les cartes del dealer
+            var dealerCardsHtml = "";
+            for (var i = 0; i < dealerCards.length; i++) {
+                dealerCardsHtml += `<div class="card" style="display: inline-block; width: 50px; height: 70px; background: white; color: black; border: 2px solid #333; margin: 0 5px; text-align: center; line-height: 70px; font-size: 24px; font-weight: bold; border-radius: 5px;">${dealerCards[i]}</div>`;
+            }
+
+            var dealerScoreEl = document.querySelector("#dealerScore");
+            if (dealerScoreEl) {
+                dealerScoreEl.previousElementSibling.innerHTML = dealerCardsHtml;
+            }
+
+            var dealerInterval = setInterval(function () {
+                if (dealerSum < 17) {
+                    var newCard = dice();
+                    dealerCards.push(newCard);
+                    dealerSum += newCard;
+
+                    // Actualitzar la visualització
+                    dealerCardsHtml += `<div class="card" style="display: inline-block; width: 50px; height: 70px; background: white; color: black; border: 2px solid #333; margin: 0 5px; text-align: center; line-height: 70px; font-size: 24px; font-weight: bold; border-radius: 5px;">${newCard}</div>`;
+
+                    if (dealerScoreEl) {
+                        dealerScoreEl.previousElementSibling.innerHTML = dealerCardsHtml;
+                        dealerScoreEl.innerHTML = dealerSum;
+                    }
+                } else {
+                    clearInterval(dealerInterval);
+
+                    // Determinar el guanyador
+                    var resultMessage = "";
+                    if (dealerSum > 21) {
+                        resultMessage = "El pirata es passa! Guanyes!";
+                        gold += 15;
+                        experience += 10;
+                    } else if (playerSum > dealerSum) {
+                        resultMessage = "La teva mà és millor! Guanyes!";
+                        gold += 15;
+                        experience += 10;
+                    } else if (playerSum < dealerSum) {
+                        resultMessage = "El pirata guanya!";
+                        gold -= 5;
+                    } else {
+                        resultMessage = "Empat! Ningú guanya.";
+                    }
+
+                    if (bjMessage) bjMessage.innerHTML = resultMessage;
+
+                    setTimeout(function () {
+                        gameMessage = resultMessage + " Or actual: " + gold;
+                        closeOverlay();
+                    }, 2500);
+                }
+            }, 1000);
+        }
+
+        // Funció per al comerç a les illes
+        function trade() {
+            var content = document.querySelector("#overlayContent");
+            content.innerHTML = `
+                <h2>🏝️ Comerciant a l'illa</h2>
+                <p>Benvingut al mercat local! Aquí pots intercanviar els teus recursos.</p>
+                <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; text-align: center;">
+                        <h3>🍖 Menjar</h3>
+                        <p>1 or → 5 menjar</p>
+                        <button onclick="buyFood()">Comprar</button>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; text-align: center;">
+                        <h3>💰 Or</h3>
+                        <p>5 menjar → 2 or</p>
+                        <button onclick="sellFood()">Vendre menjar</button>
+                    </div>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; margin-top: 20px;">
+                    <p>Recursos actuals:</p>
+                    <p>Or: ${gold} | Menjar: ${food}</p>
+                </div>
+                <button onclick="closeOverlay()">Sortir del mercat</button>
+            `;
+            document.querySelector("#gameOverlay").style.display = "block";
+        }
+
+        // Funció per comprar menjar
+        function buyFood() {
+            if (gold >= 1) {
+                gold -= 1;
+                food += 5;
+                updateStats();
+                document.querySelector("#overlayContent div:last-child p:last-child").textContent = "Or: " + gold + " | Menjar: " + food;
+                gameMessage = "Has comprat menjar!";
+            } else {
+                gameMessage = "No tens prou or per comprar menjar!";
+            }
+        }
+
+        // Funció per vendre menjar
+        function sellFood() {
+            if (food >= 5) {
+                food -= 5;
+                gold += 2;
+                updateStats();
+                document.querySelector("#overlayContent div:last-child p:last-child").textContent = "Or: " + gold + " | Menjar: " + food;
+                gameMessage = "Has venut menjar!";
+            } else {
+                gameMessage = "No tens prou menjar per vendre!";
+            }
+        }
+
+        // Funció per tancar la finestra emergent
+        function closeOverlay() {
+            document.querySelector("#gameOverlay").style.display = "none";
+            render();
+        }
+
+        // Funció per actualitzar les estadístiques
+        function updateStats() {
+            document.querySelector("#goldDisplay").textContent = gold;
+            document.querySelector("#foodDisplay").textContent = food;
+            document.querySelector("#expDisplay").textContent = experience;
+        }
+
+        // Funció per renderitzar el joc
+        function render() {
+            stage.innerHTML = "";
+            var startRow = Math.max(0, shipRow - Math.floor(VIEW_SIZE / 2));
+            var startCol = Math.max(0, shipColumn - Math.floor(VIEW_SIZE / 2));
+            var endRow = Math.min(ROWS, startRow + VIEW_SIZE);
+            var endCol = Math.min(COLUMNS, startCol + VIEW_SIZE);
+
+            for (var row = startRow; row < endRow; row++) {
+                for (var column = startCol; column < endCol; column++) {
+                    var cell = document.createElement("img");
+                    cell.setAttribute("class", "cell");
+
+                    if (map[row][column] === WATER) {
+                        cell.src = "images/water.png";
+                    } else if (map[row][column] === ISLAND) {
+                        cell.src = "images/island.png";
+                    } else if (map[row][column] === PIRATE) {
+                        cell.src = "images/pirate.png";
+                    } else if (map[row][column] === HOME) {
+                        cell.src = "images/home.png";
+                    }
+
+                    if (gameObjects[row][column] === SHIP) {
+                        cell.src = "images/ship.png";
+                    } else if (gameObjects[row][column] === MONSTER) {
+                        cell.src = "images/monster.png";
+                    }
+
+                    cell.style.left = (column - startCol) * SIZE + "px";
+                    cell.style.top = (row - startRow) * SIZE + "px";
+                    stage.appendChild(cell);
+                }
+            }
+
+            output.textContent = gameMessage;
+        }
+
+        // Funció per finalitzar el joc
+        function endGame() {
+            var endMessage = "";
+            var endVideo = "";
+
+            if (map[shipRow][shipColumn] === HOME) {
+                endMessage = "🎉 Felicitats, " + playerNickname + "! Has trobat el camí a casa!";
+                endVideo = "videos/Llegada.mp4";
+                addCurrentTime();
+
+                // Calcular puntuació final
+                var finalScore = gold * 10 + food * 5 + experience * 2;
+                var timeBonus = Math.max(0, 100 - time);
+                finalScore += timeBonus;
+
+                endMessage += "<br>Puntuació final: " + finalScore + " punts";
+                endMessage += "<br>Bonus de temps: " + timeBonus + " punts";
+
+                // Comprovar si és un nou rècord
+                var highScore = localStorage.getItem('islandAdventureHighScore');
+                if (!highScore || finalScore > parseInt(highScore)) {
+                    localStorage.setItem('islandAdventureHighScore', finalScore);
+                    endMessage += "<br><strong>🏆 NOU RÈCORD! 🏆</strong>";
+                }
+            } else if (gameObjects[shipRow][shipColumn] === MONSTER) {
+                endMessage = "💀 El monstre s'ha emportat el teu vaixell!";
+                endVideo = "videos/Monstre.mp4";
+            } else if (food <= 0) {
+                endMessage = "😵 La tripulació ha mort de gana!";
+                endVideo = "videos/Sharks.mp4";
+            } else if (gold <= 0) {
+                endMessage = "💸 Sense or, no pots continuar el viatge!";
+                endVideo = "videos/Red_Winning.mp4";
+            }
+
+            var content = document.querySelector("#overlayContent");
+            content.innerHTML = `
+                <h2 id="win">${endMessage}</h2>
+                <video src="${endVideo}" autoplay muted loop style="width: 200px; height: 200px; margin: 20px auto; display: block;"></video>
+                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin: 20px 0;">
+                    <h3>Estadístiques Finals</h3>
+                    <p>Temps: ${Math.floor(time / 60)}:${time % 60 < 10 ? '0' : ''}${time % 60}</p>
+                    <p>Or: ${gold}</p>
+                    <p>Menjar: ${food}</p>
+                    <p>Experiència: ${experience}</p>
+                </div>
+                <button onclick="restartGame()">Tornar a Jugar</button>
+                <button onclick="reload()">Tornar al Menú Principal</button>
+            `;
+            document.querySelector("#gameOverlay").style.display = "block";
+        }
+
+        // Funció per tornar a l'inici
+        function reload() {
+            window.location.href = "index.html";
+        }
+
+        // Funció per reiniciar el joc
+        function restartGame() {
+            // Restablir variables del joc
+            shipRow = 14;
+            shipColumn = 0;
+            food = 10;
+            gold = 10;
+            experience = 0;
+            gameMessage = "Utilitza les fletxes per trobar el camí cap a casa.";
+            moves = 0;
+            time = 0;
+
+            // Restablir mapa d'objectes
+            gameObjects = [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ];
+
+            // Tancar finestra emergent
+            document.querySelector("#gameOverlay").style.display = "none";
+
+            // Reiniciar cronòmetre
+            clearInterval(timerInterval);
+            timerInterval = setInterval(timer, 1000);
+
+            // Actualitzar estadístiques
+            updateStats();
+
+            // Renderitzar el joc
+            render();
+        }
+
+        // Iniciar el joc quan es carrega la pàgina
+        window.onload = function () {
+            init();
+            timerInterval = setInterval(timer, 1000);
+        };
+    </script>
+</body>
+
+</html>
