@@ -514,7 +514,6 @@
                 case UP:
                     if (shipRow > 0) {
                         if (gameObjects[shipRow - 1][shipColumn] === MONSTER) {
-                            shipRow--;
                             endGame();
                             return;
                         }
@@ -526,8 +525,7 @@
                     break;
                 case DOWN:
                     if (shipRow < ROWS - 1) {
-                        if (gameObjects[shipRow - 1][shipColumn] === MONSTER) {
-                            shipRow--;
+                        if (gameObjects[shipRow + 1][shipColumn] === MONSTER) {
                             endGame();
                             return;
                         }
@@ -539,8 +537,7 @@
                     break;
                 case LEFT:
                     if (shipColumn > 0) {
-                        if (gameObjects[shipRow - 1][shipColumn] === MONSTER) {
-                            shipRow--;
+                        if (gameObjects[shipRow][shipColumn - 1] === MONSTER) {
                             endGame();
                             return;
                         }
@@ -552,8 +549,7 @@
                     break;
                 case RIGHT:
                     if (shipColumn < COLUMNS - 1) {
-                        if (gameObjects[shipRow - 1][shipColumn] === MONSTER) {
-                            shipRow--;
+                        if (gameObjects[shipRow][shipColumn + 1] === MONSTER) {
                             endGame();
                             return;
                         }
@@ -574,7 +570,7 @@
                 case HOME: endGame(); break;
             }
 
-            // Comprobar si hi ha un monstre a la posició actual
+            // Comprovar si hi ha un monstre a la posició actual
             if (gameObjects[shipRow][shipColumn] === MONSTER) {
                 endGame();
                 return;
@@ -582,7 +578,7 @@
 
             moveMonster();
 
-            // Comprobar si un monstre s'ha mogut a la posició del vaixell
+            // Comprovar si un monstre s'ha mogut a la posició del vaixell
             if (gameObjects[shipRow][shipColumn] === MONSTER) {
                 endGame();
                 return;
@@ -609,26 +605,38 @@
         // Funció per moure els monstres
         function moveMonster() {
             var MOV_UP = 1, MOV_DOWN = 2, MOV_LEFT = 3, MOV_RIGHT = 4;
+            var newGameObjects = JSON.parse(JSON.stringify(gameObjects)); // Crear una còpia del mapa d'objectes
+
             for (var r = 0; r < ROWS; r++) {
                 for (var c = 0; c < COLUMNS; c++) {
                     if (gameObjects[r][c] === MONSTER) {
                         var validDirections = [];
-                        if (r > 0 && map[r - 1][c] === WATER && gameObjects[r - 1][c] === 0) validDirections.push(MOV_UP);
-                        if (r < ROWS - 1 && map[r + 1][c] === WATER && gameObjects[r + 1][c] === 0) validDirections.push(MOV_DOWN);
-                        if (c > 0 && map[r][c - 1] === WATER && gameObjects[r][c - 1] === 0) validDirections.push(MOV_LEFT);
-                        if (c < COLUMNS - 1 && map[r][c + 1] === WATER && gameObjects[r][c + 1] === 0) validDirections.push(MOV_RIGHT);
+                        if (r > 0 && map[r - 1][c] === WATER && gameObjects[r - 1][c] === 0 && gameObjects[r - 1][c] !== SHIP) validDirections.push(MOV_UP);
+                        if (r < ROWS - 1 && map[r + 1][c] === WATER && gameObjects[r + 1][c] === 0 && gameObjects[r + 1][c] !== SHIP) validDirections.push(MOV_DOWN);
+                        if (c > 0 && map[r][c - 1] === WATER && gameObjects[r][c - 1] === 0 && gameObjects[r][c - 1] !== SHIP) validDirections.push(MOV_LEFT);
+                        if (c < COLUMNS - 1 && map[r][c + 1] === WATER && gameObjects[r][c + 1] === 0 && gameObjects[r][c + 1] !== SHIP) validDirections.push(MOV_RIGHT);
+
+                        // Comprovar si el monstre pot matar el vaixell
+                        if (r > 0 && map[r - 1][c] === WATER && gameObjects[r - 1][c] === SHIP) validDirections.push(MOV_UP);
+                        if (r < ROWS - 1 && map[r + 1][c] === WATER && gameObjects[r + 1][c] === SHIP) validDirections.push(MOV_DOWN);
+                        if (c > 0 && map[r][c - 1] === WATER && gameObjects[r][c - 1] === SHIP) validDirections.push(MOV_LEFT);
+                        if (c < COLUMNS - 1 && map[r][c + 1] === WATER && gameObjects[r][c + 1] === SHIP) validDirections.push(MOV_RIGHT);
 
                         if (validDirections.length > 0) {
                             var direction = validDirections[Math.floor(Math.random() * validDirections.length)];
-                            gameObjects[r][c] = 0;
-                            if (direction === MOV_UP) gameObjects[r - 1][c] = MONSTER;
-                            if (direction === MOV_DOWN) { gameObjects[r + 1][c] = MONSTER; r++; }
-                            if (direction === MOV_LEFT) gameObjects[r][c - 1] = MONSTER;
-                            if (direction === MOV_RIGHT) { gameObjects[r][c + 1] = MONSTER; c++; }
+                            newGameObjects[r][c] = 0; // Esborrar la posició actual del monstre en la còpia
+
+                            if (direction === MOV_UP) newGameObjects[r - 1][c] = MONSTER;
+                            if (direction === MOV_DOWN) newGameObjects[r + 1][c] = MONSTER;
+                            if (direction === MOV_LEFT) newGameObjects[r][c - 1] = MONSTER;
+                            if (direction === MOV_RIGHT) newGameObjects[r][c + 1] = MONSTER;
                         }
                     }
                 }
             }
+
+            // Actualitzar el mapa d'objectes amb la nova posició dels monstres
+            gameObjects = newGameObjects;
         }
 
         // Funció per a la lluita contra pirates
@@ -855,10 +863,11 @@
         // Funció per renderitzar el joc
         function render() {
             stage.innerHTML = "";
-            var startRow = Math.max(0, shipRow - Math.floor(VIEW_SIZE / 2));
-            var startCol = Math.max(0, shipColumn - Math.floor(VIEW_SIZE / 2));
-            var endRow = Math.min(ROWS, startRow + VIEW_SIZE);
-            var endCol = Math.min(COLUMNS, startCol + VIEW_SIZE);
+
+            var startRow = Math.max(0, Math.min(ROWS - VIEW_SIZE, shipRow - Math.floor(VIEW_SIZE / 2)));
+            var startCol = Math.max(0, Math.min(COLUMNS - VIEW_SIZE, shipColumn - Math.floor(VIEW_SIZE / 2)));
+            var endRow = startRow + VIEW_SIZE;
+            var endCol = startCol + VIEW_SIZE;
 
             for (var row = startRow; row < endRow; row++) {
                 for (var column = startCol; column < endCol; column++) {
@@ -896,7 +905,7 @@
             var endVideo = "";
 
             if (map[shipRow][shipColumn] === HOME) {
-                endMessage = "🎉 Felicitats, " + playerNickname + "! Has trobat el camí a casa!";
+                endMessage = "🎉 Felicitats, " + playerNickname + "! Has trobat el camí a casa! 🎉";
                 endVideo = "videos/Llegada.mp4";
                 addCurrentTime();
 
