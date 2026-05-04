@@ -335,19 +335,40 @@
             [4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ];
 
-        var WATER = 0, ISLAND = 1, PIRATE = 2, HOME = 3, SHIP = 4, MONSTER = 5;
-        var UP = 38, DOWN = 40, RIGHT = 39, LEFT = 37;
-        var SIZE = 64, ROWS = 15, COLUMNS = 15, VIEW_SIZE = 8;
+        var WATER = 0;
+        var ISLAND = 1;
+        var PIRATE = 2;
+        var HOME = 3;
+        var SHIP = 4;
+        var MONSTER = 5;
 
-        var shipRow, shipColumn, monsterRow, monsterColumn;
-        var food = 10, gold = 10, experience = 0;
+        var UP = 38;
+        var DOWN = 40;
+        var RIGHT = 39;
+        var LEFT = 37;
+
+        var SIZE = 64;
+        var ROWS = 15;
+        var COLUMNS = 15;
+        var VIEW_SIZE = 8;
+
+        var shipRow;
+        var shipColumn;
+        var monsterRow;
+        var monsterColumn;
+
+        var food = 10;
+        var gold = 10;
+        var experience = 0;
         var gameMessage = "Utilitza les fletxes per trobar el camí cap a casa.";
-        var moves = 0, maxMonsters = 5;
+        var moves = 0;
+        var maxMonsters = 5;
 
         // Variables per al sistema de temps i nicknames
         var savedTimes = [];
         var playerNickname = "Anon";
-        var time = 0, timerInterval;
+        var time = 0;
+        var timerInterval;
 
         // Carregar temps guardats des de localStorage
         function loadSavedTimes() {
