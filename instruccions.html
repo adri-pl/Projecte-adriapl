@@ -310,22 +310,18 @@
 
     <script>
         function showSection(sectionId) {
-            // Amagar totes les targetes
             var cards = document.querySelectorAll('.card');
             cards.forEach(function (card) {
                 card.classList.remove('active');
             });
 
-            // Desactivar tots els botons
             var buttons = document.querySelectorAll('.button');
             buttons.forEach(function (button) {
                 button.classList.remove('active');
             });
 
-            // Mostrar la targeta seleccionada
             document.getElementById(sectionId).classList.add('active');
 
-            // Activar el botó corresponent
             event.target.classList.add('active');
         }
     </script>
