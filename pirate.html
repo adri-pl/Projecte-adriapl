@@ -918,7 +918,7 @@
                 endMessage += "<br>Puntuació final: " + finalScore + " punts";
                 endMessage += "<br>Bonus de temps: " + timeBonus + " punts";
 
-                // Comprovar si és un nou rècord
+                // Comprovar si hi ha un nou rècord
                 var highScore = localStorage.getItem('islandAdventureHighScore');
                 if (!highScore || finalScore > parseInt(highScore)) {
                     localStorage.setItem('islandAdventureHighScore', finalScore);
