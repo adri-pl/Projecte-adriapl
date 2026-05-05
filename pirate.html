@@ -605,7 +605,7 @@
         // Funció per moure els monstres
         function moveMonster() {
             var MOV_UP = 1, MOV_DOWN = 2, MOV_LEFT = 3, MOV_RIGHT = 4;
-            var newGameObjects = JSON.parse(JSON.stringify(gameObjects)); // Crear una còpia del mapa d'objectes
+            var newGameObjects = JSON.parse(JSON.stringify(gameObjects));
 
             for (var r = 0; r < ROWS; r++) {
                 for (var c = 0; c < COLUMNS; c++) {
@@ -624,7 +624,7 @@
 
                         if (validDirections.length > 0) {
                             var direction = validDirections[Math.floor(Math.random() * validDirections.length)];
-                            newGameObjects[r][c] = 0; // Esborrar la posició actual del monstre en la còpia
+                            newGameObjects[r][c] = 0;
 
                             if (direction === MOV_UP) newGameObjects[r - 1][c] = MONSTER;
                             if (direction === MOV_DOWN) newGameObjects[r + 1][c] = MONSTER;
@@ -814,7 +814,7 @@
                 </div>
                 <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; margin-top: 20px;">
                     <p>Recursos actuals:</p>
-                    <p>Or: ${gold} | Menjar: ${food}</p>
+                    <p id="resourcesText">Or: ${gold} | Menjar: ${food}</p>
                 </div>
                 <button onclick="closeOverlay()">Sortir del mercat</button>
             `;
@@ -827,7 +827,7 @@
                 gold -= 1;
                 food += 5;
                 updateStats();
-                document.querySelector("#overlayContent div:last-child p:last-child").textContent = "Or: " + gold + " | Menjar: " + food;
+                document.querySelector("#resourcesText").textContent = "Or: " + gold + " | Menjar: " + food;
                 gameMessage = "Has comprat menjar!";
             } else {
                 gameMessage = "No tens prou or per comprar menjar!";
@@ -840,7 +840,7 @@
                 food -= 5;
                 gold += 2;
                 updateStats();
-                document.querySelector("#overlayContent div:last-child p:last-child").textContent = "Or: " + gold + " | Menjar: " + food;
+                document.querySelector("#resourcesText").textContent = "Or: " + gold + " | Menjar: " + food;
                 gameMessage = "Has venut menjar!";
             } else {
                 gameMessage = "No tens prou menjar per vendre!";
@@ -864,6 +864,7 @@
         function render() {
             stage.innerHTML = "";
 
+            // Renderitzar un 8x8 al voltant del vaixell i limitar les bandes
             var startRow = Math.max(0, Math.min(ROWS - VIEW_SIZE, shipRow - Math.floor(VIEW_SIZE / 2)));
             var startCol = Math.max(0, Math.min(COLUMNS - VIEW_SIZE, shipColumn - Math.floor(VIEW_SIZE / 2)));
             var endRow = startRow + VIEW_SIZE;
